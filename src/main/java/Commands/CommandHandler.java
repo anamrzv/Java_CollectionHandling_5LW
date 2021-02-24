@@ -1,5 +1,8 @@
 package Commands;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +16,17 @@ public class CommandHandler {
         commands.put(c.getName(), c);
         c = new Exit(); //exit
         commands.put(c.getName(), c);
+        c = new SimpleAdd(); //simple add
+        commands.put(c.getName(), c);
     }
 
-    private void run(){
+    private void run() throws IOException {
         boolean isFound = false;
         System.out.print(">");
-        Scanner scan = new Scanner(System.in);
-        String input = scan.nextLine();
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String input = br.readLine().trim();
+
+        input = parseCommand(input);
         for (Command c: commands.values()) {
             if (input.equalsIgnoreCase(c.getName())) {
                 c.run();
@@ -30,7 +37,12 @@ public class CommandHandler {
         run();
     }
 
-    public void setStart(){
+    private String parseCommand(String input){
+        String[] elements = input.split(" ");
+        return elements[0];
+    }
+
+    public void setStart() throws IOException {
         run();
     }
 

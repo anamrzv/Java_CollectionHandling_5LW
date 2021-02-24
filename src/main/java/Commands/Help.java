@@ -7,7 +7,7 @@ public class Help implements Command{
         Map<String,Command> commands = commandHandler.getMap();
         System.out.println("Доступные команды:");
         for (Command c : commands.values()){
-            System.out.println(c.getName()+c.getDescription());
+            System.out.println(c.getDescription());
         }
     }
 
@@ -16,6 +16,6 @@ public class Help implements Command{
     }
 
     public String getDescription(){
-        return " : вывести справку по доступным командам";
+        return "help : вывести справку по доступным командам";
     }
 }

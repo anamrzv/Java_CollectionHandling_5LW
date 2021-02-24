@@ -11,6 +11,6 @@ public class Exit implements Command{
     }
 
     public String getDescription(){
-        return " : завершить программу без сохранения в файл";
+        return "exit : завершить программу без сохранения в файл";
     }
 }
