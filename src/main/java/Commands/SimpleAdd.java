@@ -7,12 +7,13 @@ import java.util.*;
 
 public class SimpleAdd implements Command{
 
-    private Map<Integer,Location> readyLocations = new HashMap<>();
-    LinkedList<Person> people = new LinkedList<>();
+    private Map<Integer,Location> readyLocations;
+    private Color hair;
 
-    public void run() throws IOException {
+    public void run(CommandHandler ch) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Person p = new Person();
+        readyLocations = ch.getLocations();
 
         System.out.println("Введите имя персоны (не пустая строка). Это обязательное поле");
         try {
@@ -91,21 +92,26 @@ public class SimpleAdd implements Command{
         System.out.println("Выберите цвет волос. Это обязательное поле.");
         try {
             do {
-                System.out.println("Пожалуйста, введите число из представленных:\n1.Блонд \n2.Рыжий \n3.Седой \n4.Русый");
-                System.out.print(">");
-                String input = br.readLine().trim();
-                if (input.isEmpty())
-                    System.out.println("Нельзя ввести пустую строку в данное поле, пожалуйста, введите данные.");
-                else {
-                    int hair = Integer.parseInt(input);
-                    if (hair > 4 || hair < 1)
-                        System.out.println("Был введен неправильный номер. Введите номер от 1 до 4.");
+                System.out.println("Пожалуйста, введите цвет волос из представленных (на английском) :\nYELLOW \nORANGE \nWHITE \nBROWN");
+                boolean isFound = false;
+                do {
+                    System.out.print(">");
+                    String input = br.readLine().trim();
+                    if (input.isEmpty())
+                        System.out.println("Нельзя ввести пустую строку в данное поле, пожалуйста, введите данные.");
                     else {
-                        Color color = parseHair(hair);
-                        p.setHair(color);
-                        break;
+                        for (Color c : Color.values()) {
+                            if (input.equalsIgnoreCase(c.toString())) {
+                                    isFound = true;
+                                    hair = c;
+                                    break;
+                            }
+                        }
+                        if (!isFound) System.out.println("Введите вариант из предложенных");
                     }
-                }
+                }while (!isFound);
+                p.setHair(hair);
+                break;
             } while (true);
         } catch (Exception e) {
             System.out.println("Неверный формат ввода. Попробуйте ввести цвет волос ещё раз");
@@ -116,7 +122,7 @@ public class SimpleAdd implements Command{
                 {
                     if (readyLocations.size() == 0) {
                     System.out.println("Пока не существует готовых местоположений. Добавьте одно.");
-                    addLocation(br); }
+                    addLocation(br, ch); }
                 }
 
                 int num=-1;
@@ -130,7 +136,7 @@ public class SimpleAdd implements Command{
                     }
                     num = enterSomeNumber(br);
                     if (num == 0) {
-                        addLocation(br);
+                        addLocation(br, ch);
                     }
                     if (num < 0 || num > readyLocations.size())
                     {
@@ -138,8 +144,7 @@ public class SimpleAdd implements Command{
                         num=0;
                     }
                 }while (num==0);
-
-                Location location = readyLocations.get(num - 1);
+                Location location = readyLocations.get(num);
                 p.setLocation(location);
         } catch (NumberFormatException e) {
             System.out.println("Неверный формат ввода. Попробуйте ввести расположение ещё раз");
@@ -161,12 +166,12 @@ public class SimpleAdd implements Command{
         System.out.println("Вы успешно добавили в коллекцию элемент Person "+p.getName());
         p.setTime();
         p.setID();
-        people.add(p);
+        ch.addPerson(p);
 
     }
 
 
-    private Color color;
+    /*private Color color;
     private Color parseHair(int hair){
             switch (hair){
                 case (1):
@@ -183,9 +188,9 @@ public class SimpleAdd implements Command{
                     break;
             }
             return color;
-    }
+    }*/
 
-    public void addLocation(BufferedReader br) throws IOException {
+    public void addLocation(BufferedReader br, CommandHandler ch) throws IOException {
         Location l = new Location();
         int x;
         float y;
@@ -204,7 +209,8 @@ public class SimpleAdd implements Command{
                 System.out.print(">");
                 String i = br.readLine().trim();
                 l.setLocation(x,y,z,i);
-                readyLocations.put(readyLocations.size()+1, l);
+                ch.addLocation(l);
+                //readyLocations.put(readyLocations.size()+1, l);
                 return;
             } catch (NumberFormatException e) {
                 System.out.println("Неверный формат ввода, попробуйте ввести координаты еще раз");
@@ -233,4 +239,5 @@ public class SimpleAdd implements Command{
     public String getDescription() {
         return "add Person : добавить новый элемент в коллекцию";
     }
+
 }

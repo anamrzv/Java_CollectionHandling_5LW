@@ -1,15 +1,16 @@
 package Commands;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Scanner;
-import java.util.HashMap;
-import java.util.Map;
+import Other.Location;
+import Other.Person;
+
+import java.io.*;
+import java.util.*;
 
 public class CommandHandler {
 
-    private Map<String, Command> commands =  new HashMap<String, Command>();
+    private Map<String, Command> commands =  new HashMap<>();
+    private Map<Integer, Location> readyLocations = new HashMap<>();
+    private LinkedList<Person> people = new LinkedList<>();
 
     public CommandHandler(){
         Command c = new Help(); //help
@@ -17,6 +18,10 @@ public class CommandHandler {
         c = new Exit(); //exit
         commands.put(c.getName(), c);
         c = new SimpleAdd(); //simple add
+        commands.put(c.getName(), c);
+        c = new Info(); //info
+        commands.put(c.getName(), c);
+        c = new Show(); //show
         commands.put(c.getName(), c);
     }
 
@@ -29,12 +34,28 @@ public class CommandHandler {
         input = parseCommand(input);
         for (Command c: commands.values()) {
             if (input.equalsIgnoreCase(c.getName())) {
-                c.run();
                 isFound = true;
+                c.run(this);
             }
         }
         if (!isFound) System.out.println("Пожалуйста, повторите ввод");
         run();
+    }
+
+    public void addPerson(Person p){
+        people.add(p);
+    }
+
+    public LinkedList getPeople(){
+        return people;
+    }
+
+    public void addLocation(Location l){
+        readyLocations.put(readyLocations.size()+1,l);
+    }
+
+    public Map getLocations(){
+        return readyLocations;
     }
 
     private String parseCommand(String input){

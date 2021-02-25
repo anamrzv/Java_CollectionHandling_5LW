@@ -1,8 +1,9 @@
 package Other;
 import java.time.*;
+import java.util.Date;
 import java.util.Objects;
 
-public class Person {
+public class Person implements Comparable {
     private Long id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
     private String name; //Поле не может быть null, Строка не может быть пустой
     private java.time.LocalDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
@@ -26,6 +27,10 @@ public class Person {
     public void setTime(){
         LocalDateTime now = LocalDateTime.now();
         creationDate = now;
+    }
+
+    public LocalDateTime getTime(){
+        return creationDate;
     }
 
     public void setHeight(Long height){
@@ -53,6 +58,13 @@ public class Person {
     }
 
     @Override
+    public int compareTo(Object o) {
+        Person tmp = (Person) o;
+        if (this.id<tmp.id) return -1;
+        else return 1;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -71,5 +83,20 @@ public class Person {
     @Override
     public int hashCode() {
         return Objects.hash(name, creationDate, height, weight, passportID, hairColor, location, coordinates);
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", creationDate=" + creationDate +
+                ", height=" + height +
+                ", weight=" + weight +
+                ", passportID='" + passportID + '\'' +
+                ", hairColor=" + hairColor +
+                ", location=" + location +
+                ", coordinates=" + coordinates +
+                '}';
     }
 }

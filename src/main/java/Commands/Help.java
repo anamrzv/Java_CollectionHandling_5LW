@@ -2,7 +2,7 @@ package Commands;
 import java.util.Map;
 
 public class Help implements Command{
-    public void run(){
+    public void run(CommandHandler ch){
         CommandHandler commandHandler = new CommandHandler();
         Map<String,Command> commands = commandHandler.getMap();
         System.out.println("Доступные команды:");

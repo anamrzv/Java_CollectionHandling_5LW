@@ -1,9 +1,5 @@
 package Other;
 
-import javax.sound.midi.Soundbank;
-import java.sql.SQLOutput;
-import java.util.Scanner;
-
 public class Location {
     private Integer x; //Поле не может быть null
     private float y;
@@ -26,5 +22,13 @@ public class Location {
         if (name!="") this.name=name;
     }
 
-
+    @Override
+    public String toString() {
+        return "{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
