@@ -2,8 +2,14 @@ package Commands;
 
 import java.io.IOException;
 
-public interface Command {
-    public void run(CommandHandler ch) throws IOException;
-    public String getName();
-    public String getDescription();
+public abstract class Command {
+    public CommandHandler ch;
+
+    Command(CommandHandler ch){
+        this.ch=ch;
+    }
+
+    public abstract boolean execute(String... args) throws IOException;
+    public abstract String getName();
+    public abstract String getDescription();
 }

@@ -3,16 +3,27 @@ package Commands;
 import java.util.*;
 import Other.*;
 
-public class Info implements Command{
+public class Info extends Command{
+
+    public Info(CommandHandler ch){
+        super(ch);
+    }
 
     @Override
-    public void run(CommandHandler ch) {
-        LinkedList<Person> people = ch.getPeople();
-        Collections.sort(people);
-        System.out.println("Тип коллекции: "+people.getClass());
-        System.out.println("Тип элементов: Person");
-        System.out.println("Количество элементов: "+ people.size());
-        System.out.println("Дата инициализации: "+ people.get(0).getTime());
+    public boolean execute(String...args) {
+        if (args == null) {
+            LinkedList<Person> people = ch.getPeople();
+            Collections.sort(people);
+            System.out.println("Тип коллекции: " + people.getClass());
+            System.out.println("Тип элементов: Person");
+            System.out.println("Количество элементов: " + people.size());
+            System.out.println("Дата инициализации: " + people.get(0).getTime());
+            return true;
+        }
+        else {
+            System.out.println("У команды info нет аргументов. Повторите ввод.");
+            return false;
+        }
     }
 
     @Override

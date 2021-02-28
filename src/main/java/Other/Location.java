@@ -16,9 +16,9 @@ public class Location {
     }
 
     public void setLocation(int x, float y, double z, String name){
-        this.x= x;
+        this.x= Integer.valueOf(x);
         this.y=y;
-        this.z=z;
+        this.z= Double.valueOf(z);
         if (name!="") this.name=name;
     }
 

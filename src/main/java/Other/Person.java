@@ -21,7 +21,12 @@ public class Person implements Comparable {
     public String getName() {return name;}
 
     public void setID(){
-        this.id=(long)hashCode();
+        if (hashCode()>0) this.id=Long.valueOf(hashCode());
+        else this.id=Long.valueOf(hashCode())*(-1);
+    }
+
+    public Long getID(){
+        return id;
     }
 
     public void setTime(){
@@ -41,8 +46,16 @@ public class Person implements Comparable {
         this.weight=weight;
     }
 
+    public long getWeight(){
+        return weight;
+    }
+
     public void setPassport(String passport){
         this.passportID=passport;
+    }
+
+    public Long getPassportAsLong(){
+        return Long.parseLong(passportID);
     }
 
     public void setHair(Color color){

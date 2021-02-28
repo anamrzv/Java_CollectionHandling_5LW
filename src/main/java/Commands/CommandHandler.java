@@ -13,16 +13,28 @@ public class CommandHandler {
     private LinkedList<Person> people = new LinkedList<>();
 
     public CommandHandler(){
-        Command c = new Help(); //help
+        Command c = new Help(this); //help
         commands.put(c.getName(), c);
-        c = new Exit(); //exit
+        c = new Exit(this); //exit
         commands.put(c.getName(), c);
-        c = new SimpleAdd(); //simple add
+        c = new SimpleAdd(this); //simple add
         commands.put(c.getName(), c);
-        c = new Info(); //info
+        c = new Info(this); //info
         commands.put(c.getName(), c);
-        c = new Show(); //show
+        c = new Show(this); //show
         commands.put(c.getName(), c);
+        c = new RemoveByID(this);
+        commands.put(c.getName(),c); //remove by id
+        c = new Clear(this);//clear
+        commands.put(c.getName(), c);
+        c = new Head(this);
+        commands.put(c.getName(),c);
+        c = new SumOfWeight(this);
+        commands.put(c.getName(),c);
+        c = new RemoveByPass(this);
+        commands.put(c.getName(), c);
+        c = new CountLessPass(this);
+        commands.put(c.getName(),c);
     }
 
     private void run() throws IOException {
@@ -31,15 +43,20 @@ public class CommandHandler {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String input = br.readLine().trim();
 
-        input = parseCommand(input);
+        String cmd = parseCommand(input);
+        String[] args = getArguments(input);
         for (Command c: commands.values()) {
-            if (input.equalsIgnoreCase(c.getName())) {
+            if (cmd.equalsIgnoreCase(c.getName())) {
                 isFound = true;
-                c.run(this);
+                executeCommand(c, args);
             }
         }
-        if (!isFound) System.out.println("Пожалуйста, повторите ввод");
+        if (!isFound) System.out.println("Пожалуйста, повторите ввод: команда не распознана");
         run();
+    }
+
+    private void executeCommand(Command c, String[] args) throws IOException {
+        c.execute(args);
     }
 
     public void addPerson(Person p){
@@ -60,7 +77,20 @@ public class CommandHandler {
 
     private String parseCommand(String input){
         String[] elements = input.split(" ");
-        return elements[0];
+        return elements[0]; //только название команды
+    }
+
+    private String[] getArguments(String input){
+        String[] args;
+        String[] elements = input.split(" ");
+        if (elements.length>1){
+             args = new String[elements.length-1];
+             for (int i=0; i<args.length; i++){
+                 args[i]=elements[i+1];
+             }
+             return args;
+        }
+        else return null;
     }
 
     public void setStart() throws IOException {

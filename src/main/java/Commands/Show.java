@@ -1,23 +1,32 @@
 package Commands;
 
 import Other.Person;
-
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 
-public class Show implements Command {
+public class Show extends Command {
+
+    public Show(CommandHandler ch){
+        super(ch);
+    }
 
     @Override
-    public void run(CommandHandler ch){
-        LinkedList<Person> people = ch.getPeople();
-        if (people.size()==0) System.out.println("Коллекция People пуста.");
-        else {
-            Collections.sort(people);
-            System.out.println("Коллекция People:\n");
-            for (Person p:people){
-                System.out.println(p);
+    public boolean execute(String... args){
+        if (args==null) {
+            LinkedList<Person> people = ch.getPeople();
+            if (people.size() == 0) System.out.println("Коллекция People пуста.");
+            else {
+                Collections.sort(people);
+                System.out.println("Коллекция People:\n");
+                for (Person p : people) {
+                    System.out.println(p);
+                }
             }
+            return true;
+        }
+        else {
+            System.out.println("У команды show нет аргументов. Повторите ввод.");
+            return false;
         }
     }
 

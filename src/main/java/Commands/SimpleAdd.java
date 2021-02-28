@@ -5,12 +5,17 @@ import Other.*;
 import java.io.*;
 import java.util.*;
 
-public class SimpleAdd implements Command{
+public class SimpleAdd extends Command{
+
+    public SimpleAdd(CommandHandler ch){
+        super(ch);
+    }
 
     private Map<Integer,Location> readyLocations;
     private Color hair;
+    private LinkedList<Person> people;
 
-    public void run(CommandHandler ch) throws IOException {
+    public boolean execute(String... args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Person p = new Person();
         readyLocations = ch.getLocations();
@@ -167,7 +172,10 @@ public class SimpleAdd implements Command{
         p.setTime();
         p.setID();
         ch.addPerson(p);
+        people=ch.getPeople();
+        Collections.sort(people);
 
+        return true;
     }
 
 

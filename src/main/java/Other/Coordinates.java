@@ -6,7 +6,7 @@ public class Coordinates {
 
     public void setCoordinatesFirst(float x, double y){
         this.x=x;
-        this.y=y;
+        this.y=Double.valueOf(y);
     }
 
     @Override
