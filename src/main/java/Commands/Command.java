@@ -1,5 +1,7 @@
 package Commands;
 
+import Other.CommandHandler;
+
 import java.io.IOException;
 
 public abstract class Command {

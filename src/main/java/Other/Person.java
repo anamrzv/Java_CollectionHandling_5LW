@@ -58,16 +58,32 @@ public class Person implements Comparable {
         return Long.parseLong(passportID);
     }
 
+    public String getPassportID(){
+        return passportID;
+    }
+
     public void setHair(Color color){
         this.hairColor=color;
+    }
+
+    public Color getHairColor(){
+        return hairColor;
     }
 
     public void setLocation(Location location){
         this.location=location;
     }
 
+    public Location getLocation(){
+        return location;
+    }
+
     public void setCoordinates(Coordinates coordinates){
         this.coordinates=coordinates;
+    }
+
+    public Coordinates getCoordinates(){
+        return coordinates;
     }
 
     @Override

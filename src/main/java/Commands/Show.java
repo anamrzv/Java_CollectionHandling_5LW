@@ -1,5 +1,6 @@
 package Commands;
 
+import Other.CommandHandler;
 import Other.Person;
 import java.util.Collections;
 import java.util.LinkedList;

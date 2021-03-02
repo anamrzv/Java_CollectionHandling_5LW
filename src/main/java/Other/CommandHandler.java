@@ -1,10 +1,11 @@
-package Commands;
+package Other;
 
-import Other.Location;
-import Other.Person;
+import Commands.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandHandler {
 
@@ -12,7 +13,7 @@ public class CommandHandler {
     private Map<Integer, Location> readyLocations = new HashMap<>();
     private LinkedList<Person> people = new LinkedList<>();
 
-    public CommandHandler(){
+    {
         Command c = new Help(this); //help
         commands.put(c.getName(), c);
         c = new Exit(this); //exit
@@ -37,22 +38,35 @@ public class CommandHandler {
         commands.put(c.getName(),c);
     }
 
-    private void run() throws IOException {
-        boolean isFound = false;
-        System.out.print(">");
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String input = br.readLine().trim();
-
-        String cmd = parseCommand(input);
-        String[] args = getArguments(input);
-        for (Command c: commands.values()) {
-            if (cmd.equalsIgnoreCase(c.getName())) {
-                isFound = true;
-                executeCommand(c, args);
-            }
+    public CommandHandler() {
+        DocumentHandler doc = new DocumentHandler(this);
+        try {
+            doc.setRead();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (!isFound) System.out.println("Пожалуйста, повторите ввод: команда не распознана");
-        run();
+    }
+
+    private void run() {
+        try {
+            boolean isFound = false;
+            System.out.print(">");
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String input = br.readLine().trim();
+
+            String cmd = parseCommand(input);
+            String[] args = getArguments(input);
+            for (Command c : commands.values()) {
+                if (cmd.equalsIgnoreCase(c.getName())) {
+                    isFound = true;
+                    executeCommand(c, args);
+                }
+            }
+            if (!isFound) System.out.println("Пожалуйста, повторите ввод: команда не распознана");
+            run();
+        }catch (Exception e){
+            System.out.println("Неверный формат ввода команды. Введите команду еще раз.");
+        }
     }
 
     private void executeCommand(Command c, String[] args) throws IOException {
@@ -63,7 +77,7 @@ public class CommandHandler {
         people.add(p);
     }
 
-    public LinkedList getPeople(){
+    public LinkedList<Person> getPeople(){
         return people;
     }
 
@@ -71,7 +85,7 @@ public class CommandHandler {
         readyLocations.put(readyLocations.size()+1,l);
     }
 
-    public Map getLocations(){
+    public Map<Integer, Location> getLocations(){
         return readyLocations;
     }
 
@@ -85,21 +99,28 @@ public class CommandHandler {
         String[] elements = input.split(" ");
         if (elements.length>1){
              args = new String[elements.length-1];
-             for (int i=0; i<args.length; i++){
-                 args[i]=elements[i+1];
-             }
+             System.arraycopy(elements, 1, args, 0, args.length);
              return args;
         }
         else return null;
     }
 
-    public void setStart() throws IOException {
+    public void setStart() {
         run();
     }
 
-    public Map getMap(){
+    public Map<String, Command> getMap(){
         return  commands;
     }
+
+    public boolean validateName(String name){
+        Pattern pattern = Pattern.compile("^[a-zA-Zа-яА-Я ]+$");
+        Matcher m = pattern.matcher(name);
+        boolean hasNoDigit = m.matches();
+        return hasNoDigit;
+    }
+
+
 
 }
 

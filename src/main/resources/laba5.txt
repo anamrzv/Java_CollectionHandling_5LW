@@ -1,0 +1,1 @@
+{"name":"Наст7я","height":170,"weight":59,"passportID":777777777777,"hairColor":"BROWN","location":{"x":6,"y":7,"z":43,"name":"home"},"coordinates":{"x":7.0,"y":9}}

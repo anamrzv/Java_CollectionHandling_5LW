@@ -1,5 +1,7 @@
 package Commands;
 
+import Other.CommandHandler;
+
 public class Exit extends Command{
 
     public Exit(CommandHandler ch){

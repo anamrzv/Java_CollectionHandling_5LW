@@ -1,4 +1,6 @@
 package Commands;
+import Other.CommandHandler;
+
 import java.util.Map;
 
 public class Help extends Command{

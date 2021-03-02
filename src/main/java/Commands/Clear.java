@@ -1,5 +1,6 @@
 package Commands;
 
+import Other.CommandHandler;
 import Other.Person;
 
 import java.io.IOException;
