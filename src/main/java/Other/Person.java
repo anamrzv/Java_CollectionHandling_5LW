@@ -1,6 +1,5 @@
 package Other;
 import java.time.*;
-import java.util.Date;
 import java.util.Objects;
 
 public class Person implements Comparable {
@@ -17,14 +16,12 @@ public class Person implements Comparable {
     public void setName(String name){
         this.name=name;
     }
-
     public String getName() {return name;}
 
     public void setID(){
         if (hashCode()>0) this.id=Long.valueOf(hashCode());
         else this.id=Long.valueOf(hashCode())*(-1);
     }
-
     public Long getID(){
         return id;
     }
@@ -33,7 +30,6 @@ public class Person implements Comparable {
         LocalDateTime now = LocalDateTime.now();
         creationDate = now;
     }
-
     public LocalDateTime getTime(){
         return creationDate;
     }
@@ -41,23 +37,23 @@ public class Person implements Comparable {
     public void setHeight(Long height){
         this.height=height;
     }
+    public long getHeight(){return height;}
+
 
     public void setWeight(Long weight){
         this.weight=weight;
     }
-
     public long getWeight(){
         return weight;
     }
 
+
     public void setPassport(String passport){
         this.passportID=passport;
     }
-
     public Long getPassportAsLong(){
         return Long.parseLong(passportID);
     }
-
     public String getPassportID(){
         return passportID;
     }
@@ -65,7 +61,6 @@ public class Person implements Comparable {
     public void setHair(Color color){
         this.hairColor=color;
     }
-
     public Color getHairColor(){
         return hairColor;
     }
@@ -73,7 +68,6 @@ public class Person implements Comparable {
     public void setLocation(Location location){
         this.location=location;
     }
-
     public Location getLocation(){
         return location;
     }
@@ -81,7 +75,6 @@ public class Person implements Comparable {
     public void setCoordinates(Coordinates coordinates){
         this.coordinates=coordinates;
     }
-
     public Coordinates getCoordinates(){
         return coordinates;
     }
@@ -92,6 +85,7 @@ public class Person implements Comparable {
         if (this.id<tmp.id) return -1;
         else return 1;
     }
+
 
     @Override
     public boolean equals(Object o) {

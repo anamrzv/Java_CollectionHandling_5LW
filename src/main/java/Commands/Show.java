@@ -18,7 +18,7 @@ public class Show extends Command {
             if (people.size() == 0) System.out.println("Коллекция People пуста.");
             else {
                 Collections.sort(people);
-                System.out.println("Коллекция People:\n");
+                System.out.println("Коллекция People:");
                 for (Person p : people) {
                     System.out.println(p);
                 }

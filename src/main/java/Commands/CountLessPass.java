@@ -28,7 +28,7 @@ public class CountLessPass extends Command{
                     return false;
                 }
             } catch (Exception e){
-                System.out.println("В качестве аргумента передано не число");
+                System.out.println("В качестве аргумента передано не число или слишком большое число");
                 return false;
             }
             people=ch.getPeople();

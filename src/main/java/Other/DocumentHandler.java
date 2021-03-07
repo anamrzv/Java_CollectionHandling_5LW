@@ -1,50 +1,43 @@
 package Other;
 
 import java.io.*;
-import java.sql.SQLOutput;
 import java.util.*;
 import com.google.gson.*;
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 
 
 public class DocumentHandler {
-//данные в файле хранятся в json и я должна прочитать их и создать объектики
-//один объект = одна строка
-//считали строку
-//парсер - создали объект
+
     private CommandHandler ch;
     private LinkedList<Person> people;
+    private Map<Integer,Location> readyLocations;
+    private boolean alreadyLocation;
+    private Location currentLocation;
+    private String jsonLine;
 
     public DocumentHandler(CommandHandler ch){
         people=ch.getPeople();
+        readyLocations= ch.getLocations();
         this.ch=ch;
     }
 
-// name height weight passportid haircolor locX locY locZ locName coorX coorY
     private void read() throws IOException {
-
-
-        //String homeDir = System.getenv("lab5.json");
+        //String homeDir = System.getenv("lab5.txt");
         //String file = homeDir; // чтобы открывалось с любого компьютера
         File file = new File("C:\\Users\\Ana\\Programming\\Laba_5\\src\\main\\resources\\laba5.txt");
-
-        FileReader fr = new FileReader(file);
-        BufferedReader br = new BufferedReader(fr);
 
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
 
-        String jsonLine = br.readLine();
-        int num=0;
 
-            try {
+        int num=0;
+            try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+                jsonLine = br.readLine();
                 while (jsonLine != null) {
                     num+=1;
-                    System.out.println(jsonLine);
                     Person pers = gson.fromJson(jsonLine, Person.class);
                     if(pers.getName()==null||pers.getPassportID()==null||pers.getHairColor()==null||pers.getLocation()==null||pers.getCoordinates()==null){
                         printErrorMsg(num, jsonLine, file);
-                        System.out.println("Проверьте, что заполнены все обязательны поля: name, passport id, hair color, location, coordinates.");
+                        System.out.println("Проверьте, что заполнены все обязательны поля: name, passport id, hair color, location, coordinates, а в поле hair color правильно указан цвет.");
                         System.exit(0);
                     }
                     else if (!ch.validateName(pers.getName())) {
@@ -52,17 +45,31 @@ public class DocumentHandler {
                         System.out.println("В имени не могут содержаться цифры и спец. знаки");
                         System.exit(0);
                     }
+                    else if (!ch.validatePassport(pers.getPassportID())){
+                        printErrorMsg(num, jsonLine, file);
+                        System.out.println("В passport id должны содержаться только цифры.");
+                        System.exit(0);
+                    }
+                    else if (pers.getPassportID().length()<10 || pers.getPassportID().length()>27){
+                        printErrorMsg(num, jsonLine, file);
+                        System.out.println("Passport id должен содержать от 10 до 27 цифр, проверьте длину.");
+                        System.exit(0);
+                    }
                     pers.setTime();
                     pers.setID();
                     people.add(pers);
+                    currentLocation = pers.getLocation();
+                    for (Location l: readyLocations.values()){
+                        if (currentLocation.equals(l)) {
+                            alreadyLocation=true;
+                            break;
+                        }
+                    }
+                    if (!alreadyLocation) readyLocations.put(readyLocations.size()+1,pers.getLocation());
                     jsonLine = br.readLine();
                 }
-                fr.close();
-                br.close();
             } catch (JsonSyntaxException e) {
-                System.out.println("Ошибка в данных исходного файла "+file+", перезапишите файл и запустите программу снова.");
-                System.out.println("Ошибка в следующей строке => "+num);
-                System.out.println("Неправильная строка => "+ jsonLine);
+                printErrorMsg(num,jsonLine,file);
                 System.out.println("Проверьте, что там, где строки, не записаны числа, и наоборот.");
                 System.exit(0);
             }
