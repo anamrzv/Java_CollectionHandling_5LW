@@ -6,20 +6,31 @@ import com.google.gson.*;
 import java.io.*;
 import java.util.*;
 
-
+/** Команда обновляет значения полей объекта коллекции с заданным id*/
 public class Update extends Command{
 
+    /** Поле - связный список объектов Person */
     private LinkedList<Person> people;
+    /** Поле - объект SimpleAdd */
     private SimpleAdd cmd = new SimpleAdd(ch);
+    /** Поле - логическая переменная, найден ли такой объект */
     private boolean isFound=false;
-    private Color hair;
+    /** Поле - отображение объектов Location */
     private Map<Integer,Location> readyLocations;
+    /** Поле - объект Person, поля которого будут обновлены*/
     private Person updatePers;
 
+    /** Конструктор - создание нового объекта
+     * @param ch - обработчик команд
+     */
     public Update(CommandHandler ch){
         super(ch);
     }
 
+    /** Главный метод класса, запускает команду
+     * @param args Параметры командной строки
+     * @return true/false Успешно ли завершилась команда
+     */
     @Override
     public boolean execute(String... args) {
         readyLocations = ch.getLocations();
@@ -113,11 +124,11 @@ public class Update extends Command{
                                             sa.setInputCoords(br, updatePers);
                                             break;
                                     }
-                                } else System.out.println("Введите число от 1 до 7 или enter.");
+                                } else System.out.println("Введите число от 1 до 7 или enter, чтобы окончить изменения.");
                             }
                             else break;
                         } catch (Exception e) {
-                            System.out.println("Неверный формат ввода. Введите число или enter.");
+                            System.out.println("Неверный формат ввода. Введите число или enter, чтобы окончить изменения.");
                         }
                     } while (true);
                 }
@@ -126,11 +137,17 @@ public class Update extends Command{
             return false;
         }
 
+    /** Возвращает имя команды
+     * @return имя
+     */
     @Override
     public String getName() {
         return "update";
     }
 
+    /** Возвращает описание команды
+     * @return описание
+     */
     @Override
     public String getDescription() {
         return "update id {element} : обновить значение элемента коллекции, id которого равен заданному";

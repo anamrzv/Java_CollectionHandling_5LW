@@ -2,15 +2,30 @@ package Other;
 
 import java.util.Objects;
 
+/**
+ * Координаты персоны в формате (x;y)
+ */
 public class Coordinates {
+    /** Поле - координата х*/
     private float x;
+    /** Поле- коорината y */
     private Double y; //Поле не может быть null
 
+    /**
+     * Конструктор - создание нового объекта
+     * @param x - координата х
+     * @param y - коорината y
+     */
     public void setCoordinatesFirst(float x, double y){
         this.x=x;
         this.y=Double.valueOf(y);
     }
 
+    /**
+     * Метод - сравнение двух объектов
+     * @param o - объект сравнения
+     * @return true если объекты равны, false иначе
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -20,11 +35,19 @@ public class Coordinates {
                 y.equals(that.y);
     }
 
+    /**
+     * Метод - создает хэшкод объекта
+     * @return int хэшкож
+     */
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
     }
 
+    /**
+     * Метод - представляет объект в строковом виде
+     * @return String строка с информацией об объекте
+     */
     @Override
     public String toString() {
         return "{" +

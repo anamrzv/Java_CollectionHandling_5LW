@@ -7,11 +7,19 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/** Обработчик команд - все действия с коллекцией */
 public class CommandHandler {
 
+    /** Поле - отображение объектов Command */
     private Map<String, Command> commands =  new HashMap<>();
+
+    /** Поле - отображение объектов Location */
     private Map<Integer, Location> readyLocations = new HashMap<>();
+
+    /** Поле - связный список объектов Person */
     private LinkedList<Person> people = new LinkedList<>();
+
+    /** Поле - последний добавленный в коллекцию объект */
     private int lastPersonNum;
 
     {
@@ -49,6 +57,8 @@ public class CommandHandler {
         commands.put(c.getName(), c);
     }
 
+    /** Конструктор - создание нового объекта, автоматическое заполнение коллекции из файла
+     */
     public CommandHandler() {
         DocumentHandler doc = new DocumentHandler(this);
         try {
@@ -58,7 +68,9 @@ public class CommandHandler {
         }
     }
 
-    private void run() {
+    /** Главный метод класса, запускает обработчик команд
+     */
+    private void run(){
         do {
             try {
                 boolean isFound = false;
@@ -72,6 +84,7 @@ public class CommandHandler {
                     if (cmd.equalsIgnoreCase(c.getName())) {
                         isFound = true;
                         executeCommand(c, args);
+                        break;
                     }
                 }
                 if (!isFound) System.out.println("Пожалуйста, повторите ввод: команда не распознана");
@@ -82,35 +95,54 @@ public class CommandHandler {
         }while (true);
     }
 
+    /** Метод - запускает команду*/
     private void executeCommand(Command c, String[] args) throws IOException {
         c.execute(args);
     }
 
+    /** Метод - обновление поля последнего добавленного объекта коллекции*/
     public void addLastPersonNum(int numer){
         lastPersonNum=numer;
     }
 
+    /** Метод - геттер индекса последнего добавленного объекта коллекции
+     * @return int индекс*/
     public int getLastPersonNum(){
         return lastPersonNum;
     }
 
+    /** Метод - геттер коллекции людей
+     * @return LinkedList<Person> коллекция*/
     public LinkedList<Person> getPeople(){
         return people;
     }
 
+    /** Метод- добавляет локацию в коллекцию */
     public void addLocation(Location l){
         readyLocations.put(readyLocations.size()+1,l);
     }
 
+    /** Метод - геттер коллекции локаций
+     * @return Map<Integer, Location> коллекция*/
     public Map<Integer, Location> getLocations(){
         return readyLocations;
     }
 
+    /**
+     * Метод - возвращает имя команды
+     * @param input - строка
+     * @return String - имя команды
+     */
     public String parseCommand(String input){
         String[] elements = input.split(" ");
         return elements[0]; //только название команды
     }
 
+    /**
+     * Метод - возвращает аргументы команды
+     * @param input - строка
+     * @return String[] - аргументы команды
+     */
     public String[] getArguments(String input){
         String[] args;
         String[] elements = input.split(" ");
@@ -122,14 +154,20 @@ public class CommandHandler {
         else return null;
     }
 
+    /** Метод - запускает run */
     public void setStart() {
         run();
     }
 
+    /** Метод - геттер коллекции команд
+     * @return Map<String, Command> коллекция*/
     public Map<String, Command> getMap(){
         return  commands;
     }
 
+    /** Метод - валидация на отсутствие цифр и спец символов в строке
+     * @return boolean true/false
+     */
     public boolean validateName(String name){
         Pattern pattern = Pattern.compile("^[a-zA-Zа-яА-Я ]+$");
         Matcher m = pattern.matcher(name);
@@ -137,15 +175,15 @@ public class CommandHandler {
         return hasNoDigit;
     }
 
+    /** Метод - валидация на отсутствие букв в строке
+     * @return boolean true/false
+     */
     public boolean validatePassport(String pass){
         Pattern pattern = Pattern.compile("^[0-9]+$");
         Matcher m = pattern.matcher(pass);
         boolean hasNoLetter = m.matches();
         return hasNoLetter;
     }
-
-
-
 
 }
 

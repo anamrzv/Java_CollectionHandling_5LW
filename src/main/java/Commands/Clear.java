@@ -6,14 +6,23 @@ import Other.Person;
 import java.io.IOException;
 import java.util.LinkedList;
 
+/** Команда очищает коллекцию */
 public class Clear extends Command{
 
+    /** Поле - связный список объектов Person */
+    private LinkedList<Person> people;
+
+    /** Конструктор - создание нового объекта
+     * @param ch - обработчик команд
+     */
     public Clear(CommandHandler ch){
         super(ch);
     }
 
-    private LinkedList<Person> people;
-
+    /** Главный метод класса, запускает команду
+     * @param args Параметры командной строки
+     * @return true/false Успешно ли завершилась команда
+     */
     @Override
     public boolean execute(String... args) throws IOException {
         if (args==null){
@@ -23,16 +32,22 @@ public class Clear extends Command{
             return true;
         }
         else {
-            System.out.println("У команды clear нет аргументов. Повторите ввод.");
+            System.out.println("У команды clear нет аргументов. Введите команду снова.");
             return false;
         }
     }
 
+    /** Возвращает имя команды
+     * @return имя
+     */
     @Override
     public String getName() {
         return "clear";
     }
 
+    /** Возвращает описание команды
+     * @return описание
+     */
     @Override
     public String getDescription() {
         return "clear : очистить коллекцию";

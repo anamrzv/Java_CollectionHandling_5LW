@@ -4,33 +4,40 @@ import java.io.*;
 import java.util.*;
 import com.google.gson.*;
 
-
+/** Обработчик файла, которым заполняется коллекция при запуске */
 public class DocumentHandler {
 
+    /** Поле - обработчик командз */
     private CommandHandler ch;
+
+    /** Поле - связный список объектов Person */
     private LinkedList<Person> people;
+
+    /** Поле - отображение объектов Location */
     private Map<Integer,Location> readyLocations;
-    private boolean alreadyLocation;
-    private Location currentLocation;
+
+    /** Поле - строка файла */
     private String jsonLine;
 
+    /** Конструктор - создание нового объекта
+     * @param ch - обработчик команд
+     */
     public DocumentHandler(CommandHandler ch){
         people=ch.getPeople();
         readyLocations= ch.getLocations();
         this.ch=ch;
     }
 
-    private void read() throws IOException {
-        //String homeDir = System.getenv("lab5.txt");
-        //String file = homeDir; // чтобы открывалось с любого компьютера
-        File file = new File("C:\\Users\\Ana\\Programming\\Laba_5\\src\\main\\resources\\laba5.txt");
+    /** Главный метод класса, запускает обработчик файла*/
+    private void read(){
+        String homeDir = System.getenv("start5");
+        File file = new File(homeDir);
 
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
 
-
         int num=0;
-            try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+            try(BufferedReader br = new BufferedReader(new FileReader(homeDir))) {
                 jsonLine = br.readLine();
                 while (jsonLine != null) {
                     num+=1;
@@ -58,7 +65,8 @@ public class DocumentHandler {
                     pers.setTime();
                     pers.setID();
                     people.add(pers);
-                    currentLocation = pers.getLocation();
+                    Location currentLocation = pers.getLocation();
+                    boolean alreadyLocation=false;
                     for (Location l: readyLocations.values()){
                         if (currentLocation.equals(l)) {
                             alreadyLocation=true;
@@ -73,15 +81,20 @@ public class DocumentHandler {
                 System.out.println("Проверьте, что там, где строки, не записаны числа, и наоборот.");
                 System.exit(0);
             }
+            catch (Exception e){
+                System.out.println("Не удается найти файл с таким названием."+e);
+            }
     }
 
+    /** Метод - вывести отформатированное сообщение об ошибке в файле */
     private void printErrorMsg(int num, String jsonLine, File file){
         System.out.println("Ошибка в данных исходного файла "+file+", перезапишите файл и запустите программу снова.");
         System.out.println("Ошибка в следующей строке => "+num);
         System.out.println("Неправильная строка => "+ jsonLine);
     }
 
-    public void setRead() throws IOException {
+    /** Метод - запустить read */
+    public void setRead(){
         read();
     }
 

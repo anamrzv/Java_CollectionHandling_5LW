@@ -5,14 +5,23 @@ import Other.Person;
 
 import java.util.LinkedList;
 
+/** Команда выводит сумму поля 'weight' всех объектов коллекции */
 public class SumOfWeight extends Command{
 
+    /** Поле - связный список объектов Person */
+    private LinkedList<Person> people;
+
+    /** Конструктор - создание нового объекта
+     * @param ch - обработчик команд
+     */
     public SumOfWeight(CommandHandler ch){
         super(ch);
     }
 
-    private LinkedList<Person> people;
-
+    /** Главный метод класса, запускает команду
+     * @param args Параметры командной строки
+     * @return true/false Успешно ли завершилась команда
+     */
     @Override
     public boolean execute(String... args) {
         if (args==null){
@@ -25,16 +34,22 @@ public class SumOfWeight extends Command{
             return true;
         }
         else{
-            System.out.println("У команды sum_of_weight нет аргументов. Повторите ввод.");
+            System.out.println("У команды sum_of_weight нет аргументов. Введите команду еще раз.");
             return false;
         }
     }
 
+    /** Возвращает имя команды
+     * @return имя
+     */
     @Override
     public String getName() {
         return "sum_of_weight";
     }
 
+    /** Возвращает описание команды
+     * @return описание
+     */
     @Override
     public String getDescription() {
         return "sum_of_weight : вывести сумму значений поля weight для всех элементов коллекции";

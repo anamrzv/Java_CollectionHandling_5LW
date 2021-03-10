@@ -5,14 +5,23 @@ import Other.Person;
 
 import java.util.LinkedList;
 
+/** Команда выводит первый элемент коллекции */
 public class Head extends Command{
 
+    /** Поле - связный список объектов Person */
+    LinkedList<Person> people;
+
+    /** Конструктор - создание нового объекта
+     * @param ch - обработчик команд
+     */
     public Head(CommandHandler ch){
         super(ch);
     }
 
-    LinkedList<Person> people;
-
+    /** Главный метод класса, запускает команду
+     * @param args Параметры командной строки
+     * @return true/false Успешно ли завершилась команда
+     */
     @Override
     public boolean execute(String... args){
         if (args==null){
@@ -22,16 +31,22 @@ public class Head extends Command{
             return true;
         }
         else {
-            System.out.println("У команы head нет аргументов. Повторите ввод.");
+            System.out.println("У команы head нет аргументов. Введите команду снова.");
             return false;
         }
     }
 
+    /** Возвращает имя команды
+     * @return имя
+     */
     @Override
     public String getName() {
         return "head";
     }
 
+    /** Возвращает описание команды
+     * @return описание
+     */
     @Override
     public String getDescription() {
         return "head : вывести первый элемент коллекции";

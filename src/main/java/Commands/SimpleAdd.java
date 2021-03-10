@@ -8,31 +8,44 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.google.gson.*;
 
+/** Команда добавляет элемент в коллекцию либо через меню выбора, либо интерпретируя строку json */
 public class SimpleAdd extends Command{
 
+    /** Конструктор - создание нового объекта
+     * @param ch - обработчик команд
+     */
     public SimpleAdd(CommandHandler ch){
         super(ch);
     }
 
+    /** Поле - отображение объектов Location */
     private Map<Integer,Location> readyLocations;
-    private Color hair;
-    private LinkedList<Person> people;
-    private Person p;
-    private boolean alreadyLocation;
 
+    /** Поле - связный список объектов Person */
+    private LinkedList<Person> people;
+
+    /** Поле - объект Person, который будет добавлен в коллекию*/
+    private Person p;
+
+    /** Главный метод класса, запускает команду
+     * @param args Параметры командной строки
+     * @return true/false Успешно ли завершилась команда
+     */
     public boolean execute(String... args) throws IOException {
         people=ch.getPeople();
         p = new Person();
         readyLocations = ch.getLocations();
 
-
         if (args==null) {
-            System.out.println("У команды add должен быть аргумент - слово Person или строка формата json.");
+            System.out.println("У команды add должен быть один аргумент - слово 'Person' или строка формата json. Введите команду снова.");
             return false;
         }
 
         else if (args.length == 1 && args[0].equalsIgnoreCase("Person")) {
-            try(BufferedReader br = new BufferedReader(new InputStreamReader(System.in));) {
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                System.out.println("Вы выбрали добавление элемента вручную через консоль.");
+
                 System.out.println("Введите имя персоны (не пустая строка). Это обязательное поле");
                 inputName(br, p);
 
@@ -54,14 +67,13 @@ public class SimpleAdd extends Command{
                 System.out.println("Введите координаты персоны. Это обязательное поле.");
                 inputCoordinates(br, p);
 
-                //System.out.println("Элемент " + p.getName()+" добавлен в коллекцию");
+                System.out.println("Элемент " + p.getName()+" добавлен в коллекцию");
                 p.setTime();
                 p.setID();
                 people.add(p);
                 Collections.sort(people);
                 int numer = people.indexOf(p);
                 ch.addLastPersonNum(numer);
-
                 return true;
             }catch (Exception e){
                 System.out.println("Ошибка при чтении данных");
@@ -75,29 +87,30 @@ public class SimpleAdd extends Command{
             Matcher m = pattern.matcher(args[0]);
             boolean isJson = m.matches();
             if (isJson) {
-                System.out.println("Вы выбрали добавление элемента в формате json.");
+                System.out.println("Вы выбрали автоматическое добавление элемента через строку в формате json.");
                 String jsonLine=args[0];
                 try {
                     GsonBuilder builder = new GsonBuilder();
                     Gson gson = builder.create();
                     Person pers = gson.fromJson(jsonLine, Person.class);
                     if (pers.getName() == null || pers.getPassportID() == null || pers.getHairColor() == null || pers.getLocation() == null || pers.getCoordinates() == null) {
-                        System.out.println("Проверьте, что заполнены все обязательны поля: name, passport id, hair color, location, coordinates, а в поле hair color правильно указан цвет.");
+                        System.out.println("Проверьте, что заполнены все обязательны поля: name, passport id, hair color, location, coordinates, а в поле hair color правильно указан цвет.\nВведите команду снова с правильными данными.");
                         return false;
                     } else if (!ch.validateName(pers.getName())) {
-                        System.out.println("В имени не могут содержаться цифры и спец. знаки");
+                        System.out.println("В имени не могут содержаться цифры и спец. знаки.\nВведите команду снова с правильными данными.");
                         return false;
                     } else if (!ch.validatePassport(pers.getPassportID())) {
-                        System.out.println("В passport id должны содержаться только цифры.");
+                        System.out.println("В passport id должны содержаться только цифры.\nВведите команду снова с правильными данными.");
                         return false;
                     } else if (pers.getPassportID().length() < 10 || pers.getPassportID().length() > 27) {
-                        System.out.println("Passport id должен содержать от 10 до 27 цифр, проверьте длину.");
+                        System.out.println("Passport id должен содержать от 10 до 27 цифр.\nВведите команду снова с правильными данными.");
                         return false;
                     }
                     else {
                         pers.setTime();
                         pers.setID();
                         people.add(pers);
+                        boolean alreadyLocation=false;
                         Location currentLocation = pers.getLocation();
                         for (Location l: readyLocations.values()){
                             if (currentLocation.equals(l)) {
@@ -106,31 +119,36 @@ public class SimpleAdd extends Command{
                             }
                         }
                         if (!alreadyLocation) readyLocations.put(readyLocations.size()+1,pers.getLocation());
-                        //System.out.println("Элемент "+pers.getName()+" добавлен в коллекцию");
                         Collections.sort(people);
                         int numer = people.indexOf(pers);
                         ch.addLastPersonNum(numer);
                         return true;
                     }
                 }catch (JsonSyntaxException e) {
-                    System.out.println("Проверьте формат ввода строки json");
+                    System.out.println("Ошибка при чтении данных из строки. Проверьте, что в полях, где\nтребуютс числа не введены буквы и наоборот, а также то, что в поле 'цвет волос'\nнаписан цвет волос yellow, white, orange или brown.\nВведите команду снова с правильными данными.");
                     return false;
                 }
                 catch (Exception e){
-                    System.out.println("Ошибка при чтении объекта из строки");
+                    System.out.println("Ошибка при чтении объекта из строки. Проверьте корректность данных аргумента и введите команду снова.");
                     return false;
                 }
             } else {
-                System.out.println("Неверный формат строки: должна быть непустой, в фигурных скобках");
+                System.out.println("Неверный формат аргумента: строка должна быть непустой, в фигурных скобках. Введите команду снова с правильной строкой или словом 'Person'.");
                 return false;
             }
         }
         else {
-            System.out.println("У команды add должен быть только один аргумент.");
+            System.out.println("У команды add должен быть только один аргумент - слово 'Person' или строка формата json. Введите команду снова.");
             return false;
         }
     }
 
+    /**
+     * Метод - добавляет в отображение местоположений readyLocations новое, если его еще не было.
+     * @param br - буферный поток ввода
+     * @param ch - обработчик команд
+     * @throws IOException
+     */
     public void addLocation(BufferedReader br, CommandHandler ch) throws IOException {
         Location l = new Location();
         int x;
@@ -150,12 +168,24 @@ public class SimpleAdd extends Command{
                 System.out.print(">");
                 String i = br.readLine().trim();
                 l.setLocation(x,y,z,i);
-                ch.addLocation(l);
+                boolean alreadyLocation=false;
+                for (Location loc: readyLocations.values()){
+                    if (l.equals(loc)) {
+                        alreadyLocation=true;
+                        break;
+                    }
+                }
+                if (!alreadyLocation) ch.addLocation(l);
             } catch (NumberFormatException e) {
-                System.out.println("Неверный формат ввода, попробуйте ввести координаты еще раз");
+                System.out.println("Неверный формат ввода, введите координаты еще раз. Проверьте,что в веденной строке отсутствуют буквы.");
             }
     }
 
+    /**
+     * Метод - получает на вход строку, проверяет, записано ли в ней число и возвращает число.
+     * @param br - буферный поток ввода
+     * @return int - число
+     */
     private int enterSomeNumber(BufferedReader br) {
         int x;
         do{
@@ -169,24 +199,31 @@ public class SimpleAdd extends Command{
                     break;
                 }
             }catch (Exception e){
-                System.out.println("Неверный формат ввода координаты, введите число еще раз.");
+                System.out.println("Неверный формат ввода, введите координаты еще раз.");
             }
         } while (true);
         return x;
     }
 
-    public int getLastPerson(){
-        return people.indexOf(this.p);
-    }
-
+    /** Возвращает имя команды
+     * @return имя
+     */
     public String getName() {
         return "add";
     }
 
+    /** Возвращает описание команды
+     * @return описание
+     */
     public String getDescription() {
         return "add Person : добавить новый элемент в коллекцию";
     }
 
+    /**
+     * Метод - получает на вход строку, проводит валидацию, инициализирует поле 'имя' у объекта p.
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоено имя
+     */
     private void inputName(BufferedReader br, Person p){
         do {
             try {
@@ -195,21 +232,31 @@ public class SimpleAdd extends Command{
                 boolean hasNoDigit = ch.validateName(name);
                 if (name.equals(""))
                     System.out.println("Нельзя ввести пустую строку в это поле, пожалуйста, введите данные.");
-                else if (!hasNoDigit) System.out.println("В имени не можгут содержаться цифры и спец. знаки");
+                else if (!hasNoDigit) System.out.println("В имени не могут содержаться цифры и спец. знаки. Проверьте,что в веденной строке они отсутствуют и введите имя еще раз.");
                 else {
                     p.setName(name);
                     break;
                 }
             } catch (Exception e) {
-                System.out.println("Неверный формат ввода строки. Попробуйте ввести имя ещё раз.");
+                System.out.println("Неверный формат ввода, введите имя еще раз.");
             }
         }while (true);
     }
 
+    /**
+     * Метод - сеттер, запускает inputName
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоено имя
+     */
     public void setInputName(BufferedReader br, Person p){
         inputName(br, p);
     }
 
+    /**
+     * Метод - получает на вход строку, проводит валидацию, инициализирует поле 'рост' у объекта p.
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоен рост
+     */
     private void inputHeight(BufferedReader br, Person p){
         do {
             try {
@@ -230,15 +277,25 @@ public class SimpleAdd extends Command{
                     }
                 }break;
             } catch (Exception e) {
-                System.out.println("Неверный формат ввода. Введите число или enter");
+                System.out.println("Неверный формат ввода, введите число или enter.");
             }
         }while (true);
     }
 
+    /**
+     * Метод - сеттер, запускает inputHeight
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоен рост
+     */
     public void setInputHeight(BufferedReader br, Person p){
         inputHeight(br, p);
     }
 
+    /**
+     * Метод - получает на вход строку, проводит валидацию, инициализирует поле 'вес' у объекта p.
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоен вес
+     */
     private void inputWeight(BufferedReader br, Person p){
         do{
             try {
@@ -259,15 +316,25 @@ public class SimpleAdd extends Command{
                     }
                 } break;
             } catch (Exception e) {
-                System.out.println("Неверный формат ввода. Введите число или enter");
+                System.out.println("Неверный формат ввода, введите число или enter.");
             }
         } while (true);
     }
 
+    /**
+     * Метод - сеттер, запускает inputWeight
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоен вес
+     */
     public void setInputWeight(BufferedReader br, Person p){
         inputWeight(br, p);
     }
 
+    /**
+     * Метод - получает на вход строку, проводит валидацию, инициализирует поле 'id паспорта' у объекта p.
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоено id
+     */
     private void inputPassport(BufferedReader br, Person p){
         try {
             do {
@@ -277,23 +344,34 @@ public class SimpleAdd extends Command{
                 if (passport.equals(""))
                     System.out.println("Нельзя ввести пустую строку в данное поле, пожалуйста, введите данные.");
                 else if (passport.length() > 27 || passport.length() < 10)
-                    System.out.println("ID не подходит по длине,попробуйте снова.");
-                else if (!hasNoLetter) System.out.println("PassportID должен состоять только из цифр");
+                    System.out.println("ID не подходит по длине, введите данные снова.");
+                else if (!hasNoLetter) System.out.println("PassportID должен состоять только из цифр, введите данные снова.");
                 else {
                     p.setPassport(passport);
                     break;
                 }
             } while (true);
         } catch (Exception e) {
-            System.out.println("Неверный формат ввода. Попробуйте ввести ID паспорта ещё раз");
+            System.out.println("Неверный формат ввода, введите ID паспорта ещё раз");
         }
     }
 
+    /**
+     * Метод - сеттер, запускает inputPassport
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоено id паспорта
+     */
     public void setInputPassport(BufferedReader br, Person p){
         inputPassport(br, p);
     }
 
+    /**
+     * Метод - получает на вход строку, проводит валидацию, инициализирует поле 'цвет волос' у объекта p.
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоен цвет волос
+     */
     private void inputHairColor(BufferedReader br, Person p){
+        Color hair = null;
         do {
             try {
                 System.out.println("Пожалуйста, введите цвет волос из представленных (на английском) :\nYELLOW \nORANGE \nWHITE \nBROWN");
@@ -311,21 +389,31 @@ public class SimpleAdd extends Command{
                                 break;
                             }
                         }
-                        if (!isFound) System.out.println("Введите вариант из предложенных");
+                        if (!isFound) System.out.println("Пожалуйста, введите вариант из предложенных на английском языке.");
                     }
                 } while (!isFound);
                 p.setHair(hair);
                 break;
             } catch (Exception e) {
-                System.out.println("Неверный формат ввода. Попробуйте ввести цвет волос ещё раз");
+                System.out.println("Неверный формат ввода. Попробуйте ввести цвет волос ещё раз.");
             }
         }while (true);
     }
 
+    /**
+     * Метод - сеттер, запускает inputHairColor
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоен цвет волос
+     */
     public void setInputHairColor(BufferedReader br, Person p){
         inputHairColor(br, p);
     }
 
+    /**
+     * Метод - получает на вход строку, проводит валидацию, инициализирует поле 'локация' у объекта p.
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоена локация
+     */
     private void inputLocation(BufferedReader br, Person p, Map<Integer,Location> readyLocations) throws IOException {
         int num = -1;
         if (readyLocations.size() == 0) {
@@ -358,10 +446,20 @@ public class SimpleAdd extends Command{
         p.setLocation(location);
     }
 
+    /**
+     * Метод - сеттер, запускает inputLocation
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будет присвоена локация
+     */
     public void setInputLocation(BufferedReader br, Person p, Map<Integer,Location> readyLocations) throws IOException {
         inputLocation(br, p, readyLocations);
     }
 
+    /**
+     * Метод - получает на вход строку, проводит валидацию, инициализирует поле 'координаты' у объекта p.
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будут присвоены координаты
+     */
     private void inputCoordinates(BufferedReader br, Person p){
         Coordinates c = new Coordinates();
         System.out.println("Введите координату х. Это обязательное поле.");
@@ -372,6 +470,11 @@ public class SimpleAdd extends Command{
         p.setCoordinates(c);
     }
 
+    /**
+     * Метод - сеттер, запускает inputCoordinates
+     * @param br - буферный поток ввода
+     * @param p - объект Person, которому будут присвоены координаты
+     */
     public void setInputCoords(BufferedReader br, Person p){
         inputCoordinates(br, p);
     }
