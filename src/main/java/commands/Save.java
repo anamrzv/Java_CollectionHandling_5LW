@@ -33,7 +33,8 @@ public class Save extends Command {
     @Override
     public boolean execute(String... args) {
         if (args == null) {
-            try (PrintWriter pw = new PrintWriter(new File("C:\\Users\\Ana\\Programming\\Laba_5\\src\\main\\resources\\output.txt"))) {
+            String dir = System.getenv("output");
+            try (PrintWriter pw = new PrintWriter(new File(dir))) {
                 LinkedList<Person> people = ch.getPeople();
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();

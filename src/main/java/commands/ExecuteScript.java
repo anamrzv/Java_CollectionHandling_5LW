@@ -3,9 +3,11 @@ package commands;
 import other.CommandHandler;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -31,35 +33,40 @@ public class ExecuteScript extends Command {
     @Override
     public boolean execute(String... args) {
         if (args.length == 1) {
-            File file = new File(args[0]);
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                Map<String, Command> commands = ch.getMap();
-                String line = br.readLine().trim();
-                while (true) {
-                    if (line.equals("execute_script " + args[0])) {
-                        System.out.println("Обнаружена рекурсия, удалите строку execute_script " + args[0]);
-                        return false;
-                    } else {
-                        String cmd = ch.parseCommand(line);
-                        String[] arguments = ch.getArguments(line);
-                        Command command = commands.get(cmd);
-                        command.execute(arguments);
-                        System.out.println();
-                        line = br.readLine().trim();
+            Path path = Paths.get(args[0]);
+            if (Files.exists(path) && !Files.isRegularFile(path)) {
+                System.out.println("Нельзя передать специальный файл в качестве скрипта. Введите команду снова с новым аргументом.");
+            } else {
+                String dir = path.toString();
+                try (BufferedReader br = new BufferedReader(new FileReader(dir))) {
+                    Map<String, Command> commands = ch.getMap();
+                    String line = br.readLine().trim();
+                    while (true) {
+                        if (line.equals("execute_script " + args[0])) {
+                            System.out.println("Обнаружена рекурсия, удалите строку execute_script " + args[0]);
+                            return false;
+                        } else {
+                            String cmd = ch.parseCommand(line);
+                            String[] arguments = ch.getArguments(line);
+                            Command command = commands.get(cmd);
+                            command.execute(arguments);
+                            System.out.println();
+                            line = br.readLine().trim();
+                        }
                     }
+                } catch (FileNotFoundException e) {
+                    System.out.println("Файл с таким названием не найден. Убедитесь, что вы правильно указали название файла и введите команду снова.");
+                    return false;
+                } catch (Exception e) {
+                    System.out.println("Произошла ошибка при чтении скрипта. Проверьте корректность скрипта.");
+                    return false;
                 }
-            } catch (FileNotFoundException e) {
-                System.out.println("Файл с таким названием не найден. Убедитесь, что вы правильно указали название файла и введите команду снова.");
-                return false;
-            } catch (Exception e) {
-                System.out.println("Произошла ошибка при чтении скрипта. Проверьте корректность скрипта.");
-                return false;
             }
-        } else {
-            System.out.println("У команды execute_script должен быть один аргумент - имя файла. Введите команду снова.");
-            return false;
         }
+        System.out.println("У команды execute_script должен быть один аргумент - имя файла. Введите команду снова.");
+        return false;
     }
+
 
     /**
      * Возвращает имя команды

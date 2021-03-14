@@ -165,7 +165,7 @@ public class CommandHandler {
      * @return String - имя команды
      */
     public String parseCommand(String input) {
-        String[] elements = input.split(" ");
+        String[] elements = input.split(" +");
         return elements[0]; //только название команды
     }
 
@@ -177,7 +177,7 @@ public class CommandHandler {
      */
     public String[] getArguments(String input) {
         String[] args;
-        String[] elements = input.split(" ");
+        String[] elements = input.split(" +");
         if (elements.length > 1) {
             args = new String[elements.length - 1];
             System.arraycopy(elements, 1, args, 0, args.length);
