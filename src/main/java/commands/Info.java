@@ -34,7 +34,11 @@ public class Info extends Command {
             System.out.println("Тип коллекции: " + people.getClass());
             System.out.println("Тип элементов: Person");
             System.out.println("Количество элементов: " + people.size());
-            System.out.println("Дата инициализации: " + people.get(0).getTime());
+            if (people.size() != 0) {
+                System.out.println("Дата инициализации: " + people.get(0).getParsedTime());
+            } else {
+                System.out.println("Дата инициализации: -");
+            }
             return true;
         } else {
             System.out.println("У команды info нет аргументов. Введите команду снова.");

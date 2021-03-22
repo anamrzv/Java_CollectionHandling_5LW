@@ -3,7 +3,6 @@ package commands;
 import other.CommandHandler;
 import other.Person;
 
-import java.io.IOException;
 import java.util.LinkedList;
 
 /**
@@ -32,7 +31,7 @@ public class AddIfMin extends Command {
      * @return true/false Успешно ли завершилась команда
      */
     @Override
-    public boolean execute(String... args) throws IOException {
+    public boolean execute(String... args) {
         LinkedList<Person> people = ch.getPeople();
         if (args == null) {
             System.out.println("У команды add_if_min должен быть аргумент - слово 'Person' или строка формата json.");
@@ -41,15 +40,16 @@ public class AddIfMin extends Command {
             if (!cmd.execute(args)) {
                 return false;
             } else {
-                Person minPerson = people.getFirst();
-                int maybe = ch.getLastPersonNum();
-                Person maybePerson = people.get(maybe);
-                System.out.println(maybe);
-                if (!minPerson.equals(maybePerson)) {
-                    System.out.println("Объект не добавлен в коллекцию, т.к. его id больше минимального имеющегося.");
-                    people.remove(maybePerson);
-                    return false;
-                } else System.out.println("Объект добавлен в коллекцию, т.к. его id меньше прежнего минимального.");
+                if (people.size() != 0) {
+                    Person minPerson = people.getFirst();
+                    int maybe = ch.getLastPersonNum();
+                    Person maybePerson = people.get(maybe);
+                    if (!minPerson.equals(maybePerson)) {
+                        System.out.println("Объект не добавлен в коллекцию, т.к. его id больше минимального имеющегося.");
+                        people.remove(maybePerson);
+                        return false;
+                    } else System.out.println("Объект добавлен в коллекцию, т.к. его id меньше прежнего минимального.");
+                } else System.out.println("Объект добавлен в коллекцию, т.к. коллекция была пуста.");
             }
         }
         return true;

@@ -3,7 +3,6 @@ package commands;
 import other.CommandHandler;
 import other.Person;
 
-import java.io.IOException;
 import java.util.LinkedList;
 
 /**
@@ -32,7 +31,7 @@ public class AddIfMax extends Command {
      * @return true/false Успешно ли завершилась команда
      */
     @Override
-    public boolean execute(String... args) throws IOException {
+    public boolean execute(String... args) {
         LinkedList<Person> people = ch.getPeople();
         if (args == null) {
             System.out.println("У команды add_if_max должен быть аргумент - слово 'Person' или строка формата json. Введите команду снова.");
@@ -41,15 +40,17 @@ public class AddIfMax extends Command {
             if (!cmd.execute(args)) {
                 return false;
             } else {
-                Person maxPerson = people.getLast();
-                int maybe = ch.getLastPersonNum();
-                Person maybePerson = people.get(maybe);
-                System.out.println(maybe);
-                if (!maxPerson.equals(maybePerson)) {
-                    System.out.println("Объект не добавлен в коллекцию, т.к. его id меньше наибольшего имеющегося.");
-                    people.remove(maybePerson);
-                    return false;
-                } else System.out.println("Объект добавлен в коллекцию, т.к. его id больше прежнего максимального.");
+                if (people.size() != 0) {
+                    Person maxPerson = people.getLast();
+                    int maybe = ch.getLastPersonNum();
+                    Person maybePerson = people.get(maybe);
+                    if (!maxPerson.equals(maybePerson)) {
+                        System.out.println("Объект не добавлен в коллекцию, т.к. его id меньше наибольшего имеющегося.");
+                        people.remove(maybePerson);
+                        return false;
+                    } else
+                        System.out.println("Объект добавлен в коллекцию, т.к. его id больше прежнего максимального.");
+                } else System.out.println("Объект добавлен в коллекцию, т.к. коллекция была пуста.");
             }
         }
         return true;

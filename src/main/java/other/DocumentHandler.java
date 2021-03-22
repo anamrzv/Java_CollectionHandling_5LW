@@ -53,61 +53,68 @@ public class DocumentHandler {
      * Главный метод класса, запускает обработчик файла
      */
     private void read() {
-        String homeDir = System.getenv("start5");
-        Path path = Paths.get(homeDir);
-        File file = new File(homeDir);
+        try {
+            String homeDir = System.getenv("start5");
+            Path path = Paths.get(homeDir);
+            File file = new File(homeDir);
 
-
-        int num = 0;
-        if (Files.exists(path) && !Files.isRegularFile(path)) {
-            System.out.println("Нельзя передать специальный файл для чтения коллекции. Введите команду снова с новым аргументом.");
-        } else {
-            GsonBuilder builder = new GsonBuilder();
-            Gson gson = builder.create();
-            try (BufferedReader br = new BufferedReader(new FileReader(homeDir))) {
-                jsonLine = br.readLine();
-                while (jsonLine != null) {
-                    num += 1;
-                    Person pers = gson.fromJson(jsonLine, Person.class);
-                    if (pers.getName() == null || pers.getPassportID() == null || pers.getHairColor() == null || pers.getLocation() == null || pers.getCoordinates() == null) {
-                        printErrorMsg(num, jsonLine, file);
-                        System.out.println("Проверьте, что заполнены все обязательны поля: name, passport id, hair color, location, coordinates, а в поле hair color правильно указан цвет.");
-                        System.exit(0);
-                    } else if (!ch.validateName(pers.getName())) {
-                        printErrorMsg(num, jsonLine, file);
-                        System.out.println("В имени не могут содержаться цифры и спец. знаки");
-                        System.exit(0);
-                    } else if (!ch.validatePassport(pers.getPassportID())) {
-                        printErrorMsg(num, jsonLine, file);
-                        System.out.println("В passport id должны содержаться только цифры.");
-                        System.exit(0);
-                    } else if (pers.getPassportID().length() < 10 || pers.getPassportID().length() > 27) {
-                        printErrorMsg(num, jsonLine, file);
-                        System.out.println("Passport id должен содержать от 10 до 27 цифр, проверьте длину.");
-                        System.exit(0);
-                    }
-                    pers.setTime();
-                    pers.setID();
-                    people.add(pers);
-                    Location currentLocation = pers.getLocation();
-                    boolean alreadyLocation = false;
-                    for (Location l : readyLocations.values()) {
-                        if (currentLocation.equals(l)) {
-                            alreadyLocation = true;
-                            break;
-                        }
-                    }
-                    if (!alreadyLocation) readyLocations.put(readyLocations.size() + 1, pers.getLocation());
+            int num = 0;
+            if (!Files.exists(path)) {
+                System.out.println("Коллекция не была заполнена из файла, т.к. файла " + file.getName() + " не существует.\nЕсли вы хотите, чтобы коллекция была заполнена при запуске программы, присвойте переменной окружения start5 новый путь к существующему файлу и перезапустите программу.");
+            } else if (Files.exists(path) && !Files.isRegularFile(path)) {
+                System.out.println("Коллекция не загружена из файла, т.к. переменной start5 соответствует специальный файл.\nЕсли вы хотите, чтобы коллекция была заполнена при запуске программы, присвойте переменной окружения start5 новый путь к обычному файлу и перезапустите программу.");
+            } else {
+                GsonBuilder builder = new GsonBuilder();
+                Gson gson = builder.create();
+                try (BufferedReader br = new BufferedReader(new FileReader(homeDir))) {
                     jsonLine = br.readLine();
+                    while (jsonLine != null) {
+                        num += 1;
+                        Person pers = gson.fromJson(jsonLine, Person.class);
+                        if (pers.getName() == null || pers.getPassportID() == null || pers.getHairColor() == null || pers.getLocation() == null || pers.getCoordinates() == null) {
+                            printErrorMsg(num, jsonLine, file);
+                            System.out.println("Проверьте, что заполнены все обязательны поля: name, passport id, hair color, location, coordinates, а в поле hair color правильно указан цвет.");
+                            System.exit(0);
+                        } else if (!ch.validateName(pers.getName())) {
+                            printErrorMsg(num, jsonLine, file);
+                            System.out.println("В имени не могут содержаться цифры и спец. знаки");
+                            System.exit(0);
+                        } else if (!ch.validatePassport(pers.getPassportID())) {
+                            printErrorMsg(num, jsonLine, file);
+                            System.out.println("В passport id должны содержаться только цифры.");
+                            System.exit(0);
+                        } else if (pers.getPassportID().length() < 10 || pers.getPassportID().length() > 27) {
+                            printErrorMsg(num, jsonLine, file);
+                            System.out.println("Passport id должен содержать от 10 до 27 цифр, проверьте длину.");
+                            System.exit(0);
+                        }
+                        pers.setTime();
+                        pers.setID();
+                        people.add(pers);
+                        Location currentLocation = pers.getLocation();
+                        boolean alreadyLocation = false;
+                        for (Location l : readyLocations.values()) {
+                            if (currentLocation.equals(l)) {
+                                alreadyLocation = true;
+                                break;
+                            }
+                        }
+                        if (!alreadyLocation) readyLocations.put(readyLocations.size() + 1, pers.getLocation());
+                        jsonLine = br.readLine();
+                    }
+                } catch (JsonSyntaxException e) {
+                    printErrorMsg(num, jsonLine, file);
+                    System.out.println("В файле найдена ошибка. Проверьте, что там, где строки, не записаны числа, и наоборот. Обновите файл " + file.getName() + " и запустите программу снова");
+                    System.exit(0);
+                } catch (Exception e) {
+                    System.out.println("Ошибка при чтении файла. Обновите файл " + file.getName() + " и запустите программу снова.");
+                    System.exit(0);
                 }
-            } catch (JsonSyntaxException e) {
-                printErrorMsg(num, jsonLine, file);
-                System.out.println("В файле найдена ошибка. Проверьте, что там, где строки, не записаны числа, и наоборот. Обновите файл " + file.getName() + " и запустите программу снова");
-                System.exit(0);
-            } catch (Exception e) {
-                System.out.println("Не удается найти файл для загрузки " + file.getName());
-                System.exit(0);
             }
+        } catch (NullPointerException e) {
+            System.out.println("Коллекция не была заполнена из файла, т.к. переменная окружения задана неправильно или не задана. \nЕсли вы хотите, чтобы коллекция была заполнена при запуске программы, присвойте переменной окружения start5 новый путь (не к специальному файлу) и перезапустите программу.");
+        } catch (Exception e) {
+            System.out.println("Ошибка при заполнении из файла.");
         }
     }
 

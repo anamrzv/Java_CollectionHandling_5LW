@@ -1,6 +1,7 @@
 package other;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -99,6 +100,16 @@ public class Person implements Comparable<Person> {
      */
     public LocalDateTime getTime() {
         return creationDate;
+    }
+
+    /**
+     * Метод - геттер отфармотированного момента создания
+     *
+     * @return String
+     */
+    public String getParsedTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return creationDate.format(formatter);
     }
 
     /**
@@ -273,7 +284,7 @@ public class Person implements Comparable<Person> {
         return "Person {" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", creationDate=" + creationDate +
+                ", creationDate=" + getParsedTime() +
                 ", height=" + height +
                 ", weight=" + weight +
                 ", passportID='" + passportID + '\'' +
